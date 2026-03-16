@@ -54,7 +54,7 @@ namespace SnakeGame
             };
 
             IDisplay emulatorDisplay = new ConsoleDisplay();
-             IDisplay hardwareDisplay = new ArduinoDisplay(); // Uncomment when hardware display is available
+            // IDisplay hardwareDisplay = new ArduinoDisplay(); // Uncomment when hardware display is available
 
             // Initialize games
             games = new Dictionary<GameChoiceState, IGame>
@@ -214,7 +214,7 @@ namespace SnakeGame
                     if (int.TryParse(lastGameOverCode, out int codeInt))
                     {
                         emulatorDisplay.DisplayInt(codeInt);
-                        hardwareDisplay.DisplayInt(codeInt);
+                        // hardwareDisplay.DisplayInt(codeInt);
                     }
                 }
                 else
@@ -224,43 +224,43 @@ namespace SnakeGame
                         // Emulator 
                         emulatorDisplay.DisplayText(tetris.GetHudText());
 
-                        // Hardware
-                        if (hardwareDisplay is PixelBoard.ArduinoDisplay arduino)
-                        {
-                            byte dividerMask = 1 << (7 - 1);
+                        //// Hardware
+                        //if (hardwareDisplay is PixelBoard.ArduinoDisplay arduino)
+                        //{
+                        //    byte dividerMask = 1 << (7 - 1);
 
-                            byte holdMask = tetris.GetHoldMaskForHud();
-                            byte nextMask = tetris.GetNextMaskForHud();
+                        //    byte holdMask = tetris.GetHoldMaskForHud();
+                        //    byte nextMask = tetris.GetNextMaskForHud();
 
-                            var holdCol = tetris.GetHoldColorForHud();
-                            var divCol = ((byte)60, (byte)60, (byte)60);
-                            var nextCol = tetris.GetNextColorForHud();
+                        //    var holdCol = tetris.GetHoldColorForHud();
+                        //    var divCol = ((byte)60, (byte)60, (byte)60);
+                        //    var nextCol = tetris.GetNextColorForHud();
 
-                            arduino.Display7SegHud(
-                                holdMask,
-                                dividerMask,
-                                nextMask,
-                                holdCol,
-                                divCol,
-                                nextCol,
-                                tetris.GetScore()
-                            );
-                        }
-                        else
-                        {
-                            // fallback if not arduino
-                            hardwareDisplay.DisplayInt(tetris.GetScore());
-                        }
+                        //    arduino.Display7SegHud(
+                        //        holdMask,
+                        //        dividerMask,
+                        //        nextMask,
+                        //        holdCol,
+                        //        divCol,
+                        //        nextCol,
+                        //        tetris.GetScore()
+                        //    );
+                        //}
+                        //else
+                        //{
+                        //    // fallback if not arduino
+                        //    //hardwareDisplay.DisplayInt(tetris.GetScore());
+                        //}
                     }
                     else
                     {
                         emulatorDisplay.DisplayInt(gameLocal.GetScore());
-                        hardwareDisplay.DisplayInt(gameLocal.GetScore());
+                        ///hardwareDisplay.DisplayInt(gameLocal.GetScore());
                     }
                 }
 
                 emulatorDisplay.Draw(pixels);
-                 hardwareDisplay.Draw(pixels);
+                // hardwareDisplay.Draw(pixels);
             }
         }
 
