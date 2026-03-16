@@ -1,4 +1,6 @@
-﻿using PixelBoard;
+﻿#nullable enable
+
+using PixelBoard;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
@@ -24,7 +26,7 @@ namespace ConsoleTest.Games
         private bool gameOver = false;
         private int manualDropCooldown = 0;
         private int rotateCooldown = 0;  // Rotation cooldown
-        private string gameOverCode = null;  // Game over code
+        private string? gameOverCode;  // Game over code
         private DateTime ignoreDownUntil = DateTime.MinValue; // suppress repeated Down presses for a short time
 
         private TaskCompletionSource<string?>? codeTcs;
@@ -404,7 +406,7 @@ namespace ConsoleTest.Games
         }
         public bool IsGameOver() => gameOver;
 
-        public string GetGameOverCode() => gameOverCode;  // Return the generated code (may be null)
+        public string? GetGameOverCode() => gameOverCode;
 
         public void SetGameOverCode(string? code)
         {

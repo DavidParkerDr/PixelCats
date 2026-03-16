@@ -1,3 +1,5 @@
+#nullable enable
+
 using PixelBoard;
 using System;
 
@@ -11,7 +13,7 @@ namespace ConsoleTest.Games
         void HandleInput(ConsoleKey key, ref bool stateChanged);
         int GetScore();
         bool IsGameOver();
-        string GetGameOverCode();
+        string? GetGameOverCode();
         void SetGameOverCode(string? code);
         string GameId { get; }
     }

@@ -22,7 +22,7 @@ namespace ConsoleTest.Tests
             public void HandleInput(ConsoleKey key, ref bool stateChanged) { }
             public int GetScore() => 0;
             public bool IsGameOver() => false;
-            public string GetGameOverCode() => "";
+            public string? GetGameOverCode() => "";
             public void SetGameOverCode(string? code) { }
             public override string ToString() => "FakeGame";
         }
