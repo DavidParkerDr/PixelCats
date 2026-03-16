@@ -1,4 +1,25 @@
 # PixelCatsFork
+
+## Project navigation
+
+Use this quick map to find the main entry points in the repo:
+
+- `PixelGame.sln` — open this solution to load all primary projects.
+- `PixelBoardDisplay/` — shared display/input abstractions and board integration code.
+- `ConsoleTest/` — console-hosted game runner and game implementations.
+- `ConsoleTest.Tests/` — unit tests for console/game and API client behavior.
+- `HerdingCats/` — standalone game project.
+- `PixelCatsClient/` and `Client/` — Client applications.
+- `shared/latest_score.json` — shared score output consumed by parts of the solution.
+
+### Quick start by goal
+
+- **Run core console game loop**: start in `ConsoleTest/Program.cs`.
+- **Work on board rendering or Arduino integration**: start in `PixelBoardDisplay/`.
+- **Run or add tests**: start in `ConsoleTest.Tests/`.
+
+---
+
 Below are class diagrams (in Mermaid format) for all major classes and interfaces in the **PixelBoard** project.  
 
 ---
