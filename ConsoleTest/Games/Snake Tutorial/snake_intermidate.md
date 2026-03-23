@@ -1,197 +1,157 @@
-# Tutorial: Implement the missing Snake game functions (Intermediate)
+# Tutorial: Implement the missing `Snake` game functions (Intermediate)
 
-You are given the starter `Snake.cs` file (title + HSV already done, empty methods + fields provided).  
-Your task is to implement the missing methods using the intent described below.
+You are given the starter `Snake.cs` file (title + HSV already done, empty methods + fields provided).
+Implement the missing members to satisfy `IGame`.
+
+## Repo-specific note: claim code (6-digit) is injected
+
+In this repo, the 6-digit claim code is minted by `ConsoleTest/Program.cs` and injected into the game via `SetGameOverCode(string? code)`.
+Your game should:
+
+- Set `gameOver = true` when it ends
+- Expose `IsGameOver()`
+- Store and return the injected claim code via `SetGameOverCode` / `GetGameOverCode`
+
+Do **not** call `CodeGenerator` inside the game.
 
 ---
 
-## Step 0: Understand the game variables 
-
-These store the snake body, movement, food, score, speed control, and game state:
+## Step 0: Fields you likely need
 
 ```csharp
-// Game variables
-private Queue<(int x, int y)> snake = new Queue<(int x, int y)>();
+private readonly Queue<(int x, int y)> snake = new Queue<(int x, int y)>();
 private int snakeLength = 5;
 private int headX = 10;
 private int headY = 5;
+
 private int directionX = 0;
 private int directionY = 1;
 private int nextDirectionX = 0;
 private int nextDirectionY = 1;
-private Random rand = new Random();
+
+private readonly Random rand = new Random();
 private (int x, int y) food;
+
 private int score = 0;
 private float rainbowShift = 0f;
+
 private bool gameOver = false;
 private bool wallsAreDeadly = false;
 private int moveCounter = 0;
-private string gameOverCode = null;
-````
 
-What each key part does:
+private string? gameOverCode;
 
-* `snake`: queue of body segments, oldest at the front (tail)
-* `snakeLength`: how long the snake should be
-* `headX/headY`: current head location
-* `directionX/directionY`: current direction used on the next movement tick
-* `nextDirectionX/nextDirectionY`: buffered direction from input (prevents instant reverse issues)
-* `food`: where the food is
-* `moveCounter`: used to slow down movement (snake only moves every N updates)
-* `wallsAreDeadly`: if true, hitting the wall kills you; otherwise you wrap
-* `gameOverCode`: a 6-digit code for your 7-seg display once you die
+// IGame requirement:
+public string GameId { get; } = "REPLACE_WITH_REAL_GAME_ID";
+```
 
 ---
 
+## Step 1: Implement `DrawTitle(IPixel[,] pixels)` (intent)
 
-## Step 1: Goal
-
-Build Snake with:
-
-- Continuous movement controlled by a speed gate
-- Buffered direction changes (prevents instant reversal)
-- Wrap-around walls by default
-- Food spawning in empty locations
-- Growth + scoring
-- Game over on self-collision (and optionally wall collision)
-- A 6-digit code generated at game over (for your 7-seg display)
+- Fill the board with something visually distinct from gameplay.
+- Optional: animate using a slowly changing variable like `rainbowShift`.
+- Optional: draw a simple logo/letter by setting some pixels to black.
 
 ---
 
-## Step 2: Initialize(pixels)
+## Step 2: Implement `Initialize(IPixel[,] pixels)` (pseudocode)
 
-Pseudocode:
-
-- reset snake collection
-- set length to default (e.g., 5)
-- set head position to a starting coordinate
-- set current direction and next direction to the same starting direction
-- reset score, moveCounter, gameOver flag, gameOverCode
-- place food somewhere random on the grid
-- build the initial snake body behind the head:
-  - loop i from 0 to length-1:
-    - enqueue (headX, headY - i)
-
+- Clear snake queue
+- Reset snake length, head position, direction, score, counters, and `gameOver`
+- Reset `gameOverCode = null` (new run)
+- Spawn food within bounds
+- Create initial snake body segments behind the head
 
 ---
-## Step 2: Update(pixels)
 
-Pseudocode:
+## Step 3: Implement `Update(IPixel[,] pixels)` (pseudocode)
 
-- if gameOver:
-  - draw game-over screen
+- If `gameOver`:
+  - call `DrawGameOver(pixels)`
   - return
 
-- increment moveCounter
+- `moveCounter++`
 
-- if moveCounter is less than move speed:
-  - draw current frame (background + snake + food)
+- If `moveCounter < GetMoveSpeed()`:
+  - `DrawGame(pixels)`
   - return
 
-- reset moveCounter to 0
+- `moveCounter = 0`
 
-- apply buffered direction:
-  - direction = nextDirection
+- Apply buffered direction:
+  - `directionX = nextDirectionX`
+  - `directionY = nextDirectionY`
 
-- move head by direction:
-  - headX += directionX
-  - headY += directionY
+- Move head:
+  - `headX += directionX`
+  - `headY += directionY`
 
-- handle walls:
-  - if wallsAreDeadly:
-    - if head is out of bounds:
-      - set gameOver true
-      - set gameOverCode to a new 6-digit code
-      - draw game-over screen
-      - return
-  - else (wrap-around):
-    - if headX beyond right edge -> headX = 0
-    - if headX beyond left edge -> headX = maxX
-    - if headY beyond bottom edge -> headY = 0
-    - if headY beyond top edge -> headY = maxY
+- Walls:
+  - deadly: out of bounds => `gameOver = true`, `DrawGameOver`, return
+  - wrap: clamp into [0..19] / [0..9] with wrap logic
 
-- check self collision:
-  - if snake contains (headX, headY):
-    - set gameOver true
-    - set gameOverCode
-    - draw game-over
-    - return
+- Self collision:
+  - if `snake.Contains((headX, headY))` => `gameOver = true`, draw, return
 
-- check food collision:
-  - if head == food:
-    - score += 1
-    - snakeLength += 1
-    - respawn food:
-      - repeat:
-        - food = random cell
-      - until food is not on snake and not on head
+- Food collision:
+  - if head == food => `score++`, `snakeLength++`, respawn food in an empty cell
 
-- update snake body:
-  - enqueue new head position
-  - if snake.Count > snakeLength:
-    - dequeue tail
+- Body update:
+  - `snake.Enqueue((headX, headY))`
+  - if `snake.Count > snakeLength` => `snake.Dequeue()`
 
-- draw current frame
+- Draw:
+  - `DrawGame(pixels)`
+
+Important: do **not** generate the 6-digit claim code here.
 
 ---
 
-## Step 3: HandleInput(key, stateChanged)
+## Step 4: Implement `HandleInput(ConsoleKey key, ref bool stateChanged)` (pseudocode)
 
-Pseudocode:
-
-- if gameOver:
-  - if key is Escape:
-    - stateChanged = true
+- If `gameOver`:
+  - if Escape => `stateChanged = true`
   - return
 
-- on movement keys:
-  - choose new direction candidate
-  - block reversing:
-    - do not allow new direction that is the exact opposite of current direction
-  - if allowed:
-    - write it to nextDirection (buffer)
+- Movement keys:
+  - update `nextDirectionX/nextDirectionY`
+  - prevent reversing into yourself (block opposite direction)
 
-- on Escape:
-  - stateChanged = true
+- Escape:
+  - `stateChanged = true`
 
 ---
 
-## Step 4: GetScore / IsGameOver / GetGameOverCode
+## Step 5: Implement `GetScore`, `IsGameOver`, `GetGameOverCode`, `SetGameOverCode`
 
-Pseudocode:
-
-- GetScore returns score
-- IsGameOver returns gameOver
-- GetGameOverCode returns gameOverCode
-
----
-
-## Step 5: GetMoveSpeed
-
-Pseudocode:
-
-- return a smaller number as score increases
-- example thresholds:
-  - score < 5 -> 3
-  - score < 10 -> 2
-  - else -> 1
+- `GetScore()` returns `score`
+- `IsGameOver()` returns `gameOver`
+- `GetGameOverCode()` returns `gameOverCode` (nullable)
+- `SetGameOverCode(code)` stores the injected value
 
 ---
 
-## Step 6: DrawGame(pixels)
+## Step 6: Implement `GetMoveSpeed()` (pseudocode)
 
-Pseudocode:
-
-- fill board background with a dark color
-- draw snake body segments in green
-- draw snake head in brighter green
-- draw food in red
+- Return a smaller number as score increases
+- Example:
+  - score < 5 => 3
+  - score < 10 => 2
+  - else => 1
 
 ---
 
-## Step 7: DrawGameOver(pixels)
+## Step 7: Implement `DrawGame(IPixel[,] pixels)` (pseudocode)
 
-Pseudocode:
+- Fill background with dark color
+- Draw snake body green, head brighter green
+- Draw food red
 
-- draw the last game frame
-- then overlay a visible "game over" effect (tint, flash, etc.)
+---
+
+## Step 8: Implement `DrawGameOver(IPixel[,] pixels)` (pseudocode)
+
+- Draw final frame
+- Overlay a strong red tint to indicate game over
+- Keep rendering the same game-over visuals when `Update` is called post-death

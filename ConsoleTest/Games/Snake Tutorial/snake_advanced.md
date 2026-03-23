@@ -1,88 +1,141 @@
-# Tutorial: Implement the missing Snake game functions (Advanced)
+# Tutorial: Implement the missing `Snake` game functions (Advanced)
 
-Use the starter file and implement the methods so they meet the behavior rules.
+Use the starter file and implement the methods so they meet the behavior rules and satisfy the `IGame` interface.
+
+## Repo-specific architecture: claim code is injected
+
+In this repo, the 6-digit claim code is **not generated inside the game**.
+
+Flow:
+
+1. Game sets `gameOver = true` and exposes it via `IsGameOver()`.
+2. `ConsoleTest/Program.cs` detects game over, mints a claim code (server-backed), then calls `SetGameOverCode(claimCode)`.
+3. Program displays the claim code on the emulator/hardware display.
+
+Therefore:
+- `GetGameOverCode()` may return null until the program injects a value.
+- The game must **not overwrite** an injected code.
 
 ---
 
-Understand the game variables 
+## Required `IGame` members (must be implemented)
 
-These store the snake body, movement, food, score, speed control, and game state:
+- `void Initialize(IPixel[,] pixels)`
+- `void Update(IPixel[,] pixels)`
+- `void DrawTitle(IPixel[,] pixels)`
+- `void HandleInput(ConsoleKey key, ref bool stateChanged)`
+- `int GetScore()`
+- `bool IsGameOver()`
+- `string? GetGameOverCode()`
+- `void SetGameOverCode(string? code)`
+- `string GameId { get; }`
 
-```csharp
-// Game variables
-private Queue<(int x, int y)> snake = new Queue<(int x, int y)>();
+---
+
+## Recommended state fields (example)
+
+~~~csharp
+private readonly Queue<(int x, int y)> snake = new Queue<(int x, int y)>();
 private int snakeLength = 5;
 private int headX = 10;
 private int headY = 5;
+
 private int directionX = 0;
 private int directionY = 1;
 private int nextDirectionX = 0;
 private int nextDirectionY = 1;
-private Random rand = new Random();
+
+private readonly Random rand = new Random();
 private (int x, int y) food;
+
 private int score = 0;
 private float rainbowShift = 0f;
+
 private bool gameOver = false;
 private bool wallsAreDeadly = false;
 private int moveCounter = 0;
-private string gameOverCode = null;
-````
 
-What each key part does:
+// Injected claim code (nullable until Program sets it)
+private string? gameOverCode;
 
-* `snake`: queue of body segments, oldest at the front (tail)
-* `snakeLength`: how long the snake should be
-* `headX/headY`: current head location
-* `directionX/directionY`: current direction used on the next movement tick
-* `nextDirectionX/nextDirectionY`: buffered direction from input (prevents instant reverse issues)
-* `food`: where the food is
-* `moveCounter`: used to slow down movement (snake only moves every N updates)
-* `wallsAreDeadly`: if true, hitting the wall kills you; otherwise you wrap
-* `gameOverCode`: a 6-digit code for your 7-seg display once you die
+// IGame requirement (used by Program when minting claim codes)
+public string GameId { get; } = "REPLACE_WITH_REAL_GAME_ID";
+~~~
+
 ---
 
-## Core Behaviour Requirements
+## Core behavior requirements
 
-### Initialize
-- Resets all gameplay state (snake contents, length, head position, direction, score, counters, gameOver state).
-- Creates a starting snake with multiple segments.
-- Spawns food in a valid position within the grid.
+### `Initialize(IPixel[,] pixels)`
 
-### Update
-- If the game is over: renders the game-over screen and does not advance gameplay.
-- Implements timed movement (snake does not move every frame; movement is gated by a speed rule).
-- Applies buffered direction changes at the moment of movement.
-- Moves the head by one cell per movement step.
-- Handles walls:
-  - Wrap-around when deadly walls are disabled.
-  - Ends the game when deadly walls are enabled and the head exits the grid.
-- Detects self-collision and ends the game.
-- Detects food collision:
-  - Increases score.
-  - Increases snake length.
-  - Respawns food in an empty cell (not in the snake).
-- Updates the snake body structure so it grows correctly.
-- Renders the current game frame each update.
+- Reset all gameplay state:
+  - snake body, length
+  - head position
+  - direction + buffered direction
+  - score, counters, wall mode, `gameOver`
+- Reset the injected claim code:
+  - `gameOverCode = null`
+- Spawn food within bounds in a valid cell
+- Build a starting snake of multiple segments
 
-### HandleInput
-- Reads directional input (WASD + arrow keys).
-- Uses buffered input so direction changes do not cause illegal instant reversal.
-- Supports Escape to request leaving the play state via `stateChanged`.
+### `Update(IPixel[,] pixels)`
+
+- If `gameOver`:
+  - render game-over visuals
+  - do not advance gameplay state
+- Timed movement:
+  - gate movement with a speed rule (movement interval decreases as score increases)
+  - must remain playable (never <= 0)
+- Apply buffered direction only at the movement step
+- Move the head by one cell each movement step
+- Walls:
+  - wrap-around when deadly walls are disabled
+  - end game when deadly walls are enabled and head exits bounds
+- Self-collision ends the game
+- Food collision:
+  - increment score
+  - increment snake length
+  - respawn food in an empty cell
+- Update the snake queue correctly so growth works
+- Draw the current frame each update call
+
+**7-seg/claim-code requirement (repo-specific):**
+- On death, set `gameOver = true` and render game over.
+- Do not generate a claim code in-game.
+- Do not clear/overwrite `gameOverCode` except during `Initialize`.
+
+### `HandleInput(ConsoleKey key, ref bool stateChanged)`
+
+- Read direction input (WASD + arrows)
+- Buffer direction changes via `nextDirectionX/nextDirectionY`
+- Prevent illegal instant reversal (block opposite of current direction)
+- Escape requests leaving play state via `stateChanged = true`
+- When `gameOver`:
+  - allow Escape to return to title
+  - otherwise ignore movement inputs
 
 ### Scoring & state access
-- `GetScore()` returns the current score.
-- `IsGameOver()` reports whether the game has ended.
-- `GetGameOverCode()` returns a 6-digit string generated at game-over (or null/empty before death).
 
-### Speed rule
-- Speed must increase as score increases (movement interval decreases).
-- Speed must remain playable (never becomes 0 or negative).
+- `GetScore()` returns current score
+- `IsGameOver()` reports ended state
+- `GetGameOverCode()` returns the injected claim code (nullable)
+- `SetGameOverCode(code)` stores the injected claim code
 
 ### Rendering
-- `DrawGame()` renders background + snake + food.
-- Snake head must be visually distinct from the body.
-- `DrawGameOver()` renders a clearly visible game-over state distinct from gameplay.
 
-### 7-seg integration
-- A 6-digit game-over code must be generated once per death and remain stable after death.
-- Score should be usable by the outer program for display on a 7-seg display.
+- `DrawTitle()` must be visually distinct from gameplay
+- `DrawGame()` renders background + snake + food
+  - head must be visually distinct
+- `DrawGameOver()` renders an unmistakable game-over state distinct from gameplay
+
+---
+
+## Acceptance checklist (quick)
+
+- All `IGame` methods compile and behave correctly
+- No in-game call to `CodeGenerator` for claim code
+- `gameOverCode` is nullable and only set via `SetGameOverCode` (except reset in `Initialize`)
+- Program can:
+  - show score during play (`GetScore`)
+  - transition when dead (`IsGameOver`)
+  - display server code after death (via `SetGameOverCode` / `GetGameOverCode`)
