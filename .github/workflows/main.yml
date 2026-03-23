@@ -1,0 +1,65 @@
+name: Push master -> PeerReviewBranch on Azure Repos (Windows cmd)
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  push-master-to-peerreview:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: refs/heads/master
+
+      - name: Debug git environment (optional)
+        shell: cmd
+        run: |
+          git --version
+          git status --porcelain --branch
+          echo Current branch:
+          git rev-parse --abbrev-ref HEAD
+
+      - name: Push master -> PeerReviewBranch on Azure Repos (cmd)
+        shell: cmd
+        env:
+          AZDO_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
+        run: |
+          rem fail fast if secret missing
+          if "%AZDO_PAT%"=="" (
+            echo Error: AZURE_DEVOPS_PAT secret is not set. 1>&2
+            exit /b 1
+          )
+
+          rem source and target branches
+          set "SRC_BRANCH=master"
+          set "TGT_BRANCH=PeerReviewBranch"
+
+          rem NOTE: percent signs doubled to keep %20 in URL literal in cmd.exe
+          set "AZDO_URL=http://x:%AZDO_PAT%@cdp-devops.net.dcs.hull.ac.uk/CDPProjects/2526%%20-%%20Pixel%%20Cats/_git/PixelCats"
+
+          rem ensure local branch exists (checkout above should have done this)
+          git rev-parse --verify %SRC_BRANCH% >nul 2>&1
+          if errorlevel 1 (
+            echo Local branch %SRC_BRANCH% not found. Create or ensure the workflow ran on master. 1>&2
+            git branch -a
+            exit /b 2
+          )
+
+          rem ensure we are on (or reset) master to the current commit
+          git checkout -B %SRC_BRANCH%
+
+          rem add or update the azure remote
+          git remote get-url azure >nul 2>&1
+          if errorlevel 1 (
+            git remote add azure "%AZDO_URL%"
+          ) else (
+            git remote set-url azure "%AZDO_URL%"
+          )
+
+          rem push master (local) to PeerReviewBranch (remote)
+          git push azure "refs/heads/%SRC_BRANCH%:refs/heads/%TGT_BRANCH%" --follow-tags

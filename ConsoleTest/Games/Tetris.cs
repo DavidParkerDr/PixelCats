@@ -42,9 +42,9 @@ namespace ConsoleTest.Games
 
         private bool gameOver = false;
         private int manualDropCooldown = 0;
-        private int rotateCooldown = 0;
-        private string? gameOverCode;
-        private DateTime ignoreDownUntil = DateTime.MinValue;
+        private int rotateCooldown = 0;  // Rotation cooldown
+        private string gameOverCode = null;  // Game over code
+        private DateTime ignoreDownUntil = DateTime.MinValue; // suppress repeated Down presses for a short time
 
         private TaskCompletionSource<string?>? codeTcs;
 

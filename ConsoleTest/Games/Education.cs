@@ -1,3 +1,5 @@
+#nullable enable
+
 using PixelBoard;
 using System;
 using System.Threading.Tasks;
@@ -11,11 +13,11 @@ namespace ConsoleTest.Games
 
         private int score = 0;
         private int lives = 3;
-        private int rows = 20;
-        private int cols = 10;
-        private int[,] board; // 0 = empty, 1 = falling block
+        private readonly int rows = 20;
+        private readonly int cols = 10;
+        private int[,] board = new int[20, 10]; // 0 = empty, 1 = falling block
         private int bucketX = 4; // bucket center column (0..cols-1)
-        private Random rand = new Random();
+        private readonly Random rand = new Random();
         private int frameCounter = 0;
 
         // Speed tuning: base interval and minimum interval (frames)
@@ -26,7 +28,7 @@ namespace ConsoleTest.Games
         private int spawnInterval = 18; // frames between new block spawns
         private int spawnCounter = 0;
         private bool gameOver = false;
-        private string gameOverCode = null;
+        private string? gameOverCode;
 
         private TaskCompletionSource<string?>? codeTcs;
 
@@ -218,7 +220,7 @@ namespace ConsoleTest.Games
 
         public bool IsGameOver() => gameOver;
 
-        public string GetGameOverCode() => gameOverCode;
+        public string? GetGameOverCode() => gameOverCode;
 
         public int GetScore() => score;
 

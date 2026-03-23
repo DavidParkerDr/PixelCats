@@ -21,14 +21,14 @@ namespace ConsoleTest.Games
         private int directionY = 1;
         private int nextDirectionX = 0;
         private int nextDirectionY = 1;
-        private Random rand = new Random();
+        private readonly Random rand = new Random();
         private (int x, int y) food;
         private int score = 0;
         private float rainbowShift = 0f;
         private bool gameOver = false;
         private bool wallsAreDeadly = false;
         private int moveCounter = 0;
-        private string gameOverCode = null;
+        private string? gameOverCode;
 
         private TaskCompletionSource<string?>? codeTcs;
 

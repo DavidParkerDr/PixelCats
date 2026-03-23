@@ -49,10 +49,9 @@ namespace PixelCatsClient
                     lastProcessed = new DateTimeOffset(File.GetLastWriteTimeUtc(_filePath)).ToUnixTimeMilliseconds();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // don't fail startup if timestamp read fails
-                //Console.WriteLine($"[ScoreWatcher] Warning reading initial write time: {ex.Message}");
             }
             while (!ct.IsCancellationRequested)
             {

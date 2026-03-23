@@ -60,7 +60,7 @@ namespace PixelCatsClient
             {
                 // Build payload and serialized representation for dedupe
                 var payloadObj = new { score, game_code = gameId };
-                string payloadJson;
+                string? payloadJson;
                 try { payloadJson = JsonSerializer.Serialize(payloadObj); } catch { payloadJson = null; }
 
                 // Dedupe short-circuit
