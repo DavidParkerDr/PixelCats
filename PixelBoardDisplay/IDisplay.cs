@@ -40,5 +40,12 @@ namespace PixelBoard
         /// <param name="leftValue">Left 3 digits (left aligned)</param>
         /// <param name="rightValue">Right 3 digits (right aligned)</param>
         void DisplayInts(int leftValue, int rightValue);
+
+        /// <summary>
+        /// Displays text to the pannel (which in this case will be used for tetris for displaying held and next pieces)
+        /// </summary>
+        /// <param name="text"></param>
+        void DisplayText(string text);
+        void DrawBatch(IEnumerable<ILocatedPixel> pixels);
     }
 }

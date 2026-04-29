@@ -6,7 +6,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Games\Snake Tutorial\Snake_tutorial.cs" />
+    <Compile Remove="Games\Snake_tutorial.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.2" />
+  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.2" />
+	</ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\PixelBoardDisplay\PixelBoard.csproj" />
+    <ProjectReference Include="..\PixelCatsClient\PixelCatsClient.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

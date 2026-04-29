@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
@@ -23,24 +24,31 @@ namespace PixelBoard
         /// </summary>
         public ConsoleDisplay()
         {
+            //this.dh.SetFramerate(50);
             initBoard();
             ElapsedEventHandler dtfr = drawToFramerate;
-            this.dh.makeTimer(dtfr);
+            this.dh.MakeTimer(dtfr);
         }
 
         /// <summary>
         /// Construct a display with a custom size and optional framerate
         /// </summary>
-        public ConsoleDisplay(sbyte height, sbyte width, sbyte framerate = 50)
+        public ConsoleDisplay(sbyte height, sbyte width, sbyte framerate = 60)
         {
             this.dh.SetFramerate(framerate);
             this.dh.SetSize(height, width);
             initBoard();
 
             ElapsedEventHandler dtfr = drawToFramerate;
-            this.dh.makeTimer(dtfr);
+            this.dh.MakeTimer(dtfr);
         }
-
+        public void DrawBatch(IEnumerable<ILocatedPixel> pixels)
+        {
+            foreach (var pixel in pixels)
+            {
+                Draw(pixel);
+            }
+        }
         private void initBoard()
         {
             this.dh.currentBoard = new Pixel[this.dh.height, this.dh.width];
@@ -141,6 +149,12 @@ namespace PixelBoard
         public void Draw(ILocatedPixel pixel)
         {
             this.dh.Draw(pixel);
+        }
+
+        public void DisplayText(string text)
+        {
+            // Update local state first
+            this.dh.currentLCDNumber = text ?? "";
         }
     }
 }

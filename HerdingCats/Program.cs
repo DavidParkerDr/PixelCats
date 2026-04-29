@@ -550,7 +550,7 @@ namespace HerdingCats
                 .Build();
             var useEmulator = bool.Parse(_config.GetValue(Type.GetType("System.String"), "UseEmulator").ToString());
 
-            ReadBMP("title.txt", ref title);
+            ReadBMP("hello.txt", ref title);
             ReadBMP("gameOver.txt", ref gameOver);
 
             for (int i = 0; i < background.GetLength(0); i++)
@@ -559,8 +559,8 @@ namespace HerdingCats
                 {
                     if (i < background.GetLength(0) - 2)
                     {
-                        background[i, j] = dullerRainbow[j];
-                        board[i, j] = dullerRainbow[j];
+                        background[i, j] = brightRainbow[j];
+                        board[i, j] = brightRainbow[j];
                     }
                     else
                     {

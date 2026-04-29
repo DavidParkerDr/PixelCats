@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<LangVersion>preview</LangVersion>
+
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AutoRestoreMGCBTool>true</AutoRestoreMGCBTool>
+    <MGCBCommand>mgcb</MGCBCommand>
+    <DotnetCommand>dotnet</DotnetCommand>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="PCicon.bmp" />
+    <None Remove="PCicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.4.1" />
+    <PackageReference Include="MonoGame.Framework.Content.Pipeline" Version="3.8.4.1" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" />
+    <PackageReference Include="System.Net.Http.Json" Version="10.0.1" />
+    <MonoGameContentReference Include="Content/Content.mgcb" />
+  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Icon.ico">
+			<LogicalName>Icon.ico</LogicalName>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Icon.bmp">
+			<LogicalName>Icon.bmp</LogicalName>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+
+	<!-- Include the .ico in project files -->
+
+</Project>

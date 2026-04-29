@@ -1,13 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.645
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PixelBoard", "PixelBoardDisplay\PixelBoard.csproj", "{3D824CF7-EA13-4066-92DA-47E18559165B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{AC85A2E3-BE2A-4B26-85BF-74BD1E019657}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerdingCats", "HerdingCats\HerdingCats.csproj", "{DAACC048-B3D2-46E4-AD16-8641760779EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		shared\latest_score.json = shared\latest_score.json
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelCatsClient", "PixelCatsClient\PixelCatsClient.csproj", "{09BCDB0B-65BF-1A41-8243-95C954B7F421}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest.Tests", "ConsoleTest.Tests\ConsoleTest.Tests.csproj", "{CB4093B0-1F6D-4868-BA55-0465DFDFA047}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +37,14 @@ Global
 		{DAACC048-B3D2-46E4-AD16-8641760779EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAACC048-B3D2-46E4-AD16-8641760779EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAACC048-B3D2-46E4-AD16-8641760779EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09BCDB0B-65BF-1A41-8243-95C954B7F421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09BCDB0B-65BF-1A41-8243-95C954B7F421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09BCDB0B-65BF-1A41-8243-95C954B7F421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09BCDB0B-65BF-1A41-8243-95C954B7F421}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB4093B0-1F6D-4868-BA55-0465DFDFA047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB4093B0-1F6D-4868-BA55-0465DFDFA047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB4093B0-1F6D-4868-BA55-0465DFDFA047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB4093B0-1F6D-4868-BA55-0465DFDFA047}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
